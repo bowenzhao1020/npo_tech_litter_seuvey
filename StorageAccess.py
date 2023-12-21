@@ -8,7 +8,6 @@ container_name = authInfo.azure_container_name
 
 # Create Blob Service Client
 blob_service_client = BlobServiceClient(account_url = f"https://{account_name}.blob.core.windows.net", credential = account_key)
-
 # Create a Container Client
 container_client = blob_service_client.get_container_client(container_name)
 
