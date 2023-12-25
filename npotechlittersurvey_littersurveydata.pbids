@@ -1,0 +1,1 @@
+{"version":"1.0","connections":[{"details":{"protocol":"mysql","address":{"server":"npotechlittersurvey.mysql.database.azure.com","database":"littersurveydata"}},"options":{"ReturnSingleDatabase":true}}]}
