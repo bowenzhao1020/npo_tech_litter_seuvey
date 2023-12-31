@@ -1,3 +1,4 @@
 authInfo.py
 *.pyc
 __pycache__
+*.pbids
