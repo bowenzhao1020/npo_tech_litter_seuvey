@@ -6,6 +6,9 @@ from azure.storage.blob import BlobServiceClient
 
 import authInfo
 
+# import logging
+# logging.basicConfig(level=logging.DEBUG)
+
 class FileUploader:
     def __init__(self):
         # check data count
