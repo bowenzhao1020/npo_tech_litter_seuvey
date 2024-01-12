@@ -1,7 +1,7 @@
 import os
 import json
 import tkinter as tk
-from tkinter import simpledialog
+from tkinter import simpledialog, messagebox
 from azure.storage.blob import BlobServiceClient
 
 import authInfo
@@ -90,6 +90,9 @@ class FileUploader:
         self.upload_button.pack(side=tk.RIGHT, padx=20)
 
     def upload_files(self):
+        # Upload all the data into the "new" folder first
+        azure_folder_name = 'new'
+
         # Get all files in the current directory
         files = [f for f in os.listdir() if os.path.isfile(f)]
 
@@ -113,19 +116,30 @@ class FileUploader:
                 continue
 
             # Rename the file in format
-            new_file_name = f"{self.user_id}-{file_type}-{file_count}"
+            new_file_name = f"{azure_folder_name}/{self.user_id}-{file_type}-{file_count}"
 
             # Upload file to Azure blob storage
             blob_client = container_client.get_blob_client(new_file_name)
-            with open(file, "rb") as data:
-                blob_client.upload_blob(data)
-            
-            print(f"File '{file}' has been uploaded as '{new_file_name}'")
+            for attempt in range(3):
+                try:
+                    with open(file, "rb") as data:
+                        blob_client.upload_blob(data, max_concurrency=1, timeout=60)
+                    print(f"File '{file}' has been uploaded as '{new_file_name}'")
+                    self.update_user_info(self.user_id, self.image_count, self.video_count)
+                    break
+                except Exception as e:
+                    print("Error: ", e)
+                    if attempt < 2:
+                        print(f"Retrying... Attempt {attempt + 1}")
+                        continue
+                    else:
+                        print("Max retries reached. Upload failed.")
+                        break
         
         print("Upload data Complete")
 
-        self.update_user_info(self.user_id, self.image_count, self.video_count)
-        print("Update User Data Complete")
+        # Show a completion message box
+        messagebox.showinfo("Upload Complete", "The upload is complete.")
 
 
 if __name__ == "__main__":
